@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ article.title }} - 図書詳細</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="adjust">
+        <h1>図書詳細</h1>
+        <div class="book-detail">
+            <h2>{{ article.title }}</h2>
+            <p><strong>著者:</strong> {{ article.author }}</p>
+            <p><strong>ISBN:</strong> {{ article.isbn }}</p>
+            <p><strong>出版日:</strong> {{ article.publicationday }}</p>
+            <p><strong>内容:</strong> {{ article.content }}</p>
+            
+        <div class="navigation">
+            <a href="{% url 'library:index' %}">図書一覧に戻る</a>
+        </div>
+    </div>
+</body>
+</html>
