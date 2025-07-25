@@ -6,6 +6,9 @@ body {
 
 .adjust {
     padding: 0 20px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 nav {
@@ -41,11 +44,34 @@ nav button:hover {
     background-color: #777;
 }
 
-h1 {
+.adjuster {
     color: #333;
-    margin-bottom: 30px;
-    margin-right: 90px;
+    margin-bottom: 0;
     font-size: 2em;
+    text-align: center;
+}
+
+.book-detail {
+    color: #333;
+    font-size: 1em;
+    text-align: left;
+    margin-bottom: 20px;
+    max-width: 500px;
+    line-height: 1.6;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+h1 {
+    color: #333 !important;
+    font-size: 2.5rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 1rem !important;
+}
+
+
+
+.center {
     text-align: center;
 }
 
@@ -110,18 +136,12 @@ td:nth-child(4) {
 
 th:nth-child(5),
 td:nth-child(5) {
-    width: 25%;
-    vertical-align: top;
-    word-wrap: break-word;
-    word-break: break-word;
-    white-space: normal;
-    line-height: 1.4;
-    max-width: 0;
-}
-
-th:nth-child(6),
-td:nth-child(6) {
+    width: 12%;
     text-align: center;
+    word-wrap: break-word;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 td[colspan="5"] {

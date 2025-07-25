@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+{% block title %}-投稿削除{% endblock %}
+
+{% block content %}
+<div class="mt-5">
+    <h1 class="display-4 fw-bold">投稿の削除</h1>
+    <p>"{{ object.title }}"の投稿を削除しますか？</p>
+    <form action="" method="post">
+        {% csrf_token %}
+        {% bootstrap_button button_type="submit" button_class="btn-danger" content="削除" size="md" %}
+    </form>
+    <div class="mt-3">
+        <a href="{% url 'library:index' %}">{% bootstrap_button button_type="submit" button_class="btn-secondary" content="一覧ページへ戻る" size="md" %}</a>
+    </div>
+</div>
+{% endblock  %}

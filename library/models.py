@@ -1,5 +1,6 @@
 from django.utils import timezone
 from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import User
 
 class Article(models.Model):
@@ -8,6 +9,9 @@ class Article(models.Model):
     author = models.CharField(verbose_name="著者", max_length=20)
     publicationday = models.DateField(verbose_name="出版日")
     content = models.TextField(verbose_name="内容")
+    
+    def get_absolute_url(self):
+        return reverse("library:detail", kwargs={"pk": self.pk})
     
     def is_available(self):
         """在庫があるかどうかを判定"""

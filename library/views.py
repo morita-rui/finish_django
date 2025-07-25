@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views import generic
 from .models import Article
+from django.urls import reverse_lazy
 
 class IndexView(generic.ListView):
     model = Article
@@ -17,6 +18,20 @@ class IndexView(generic.ListView):
 class DetailView(generic.DetailView):
     model = Article
     template_name = 'library/detail.html'
+    
+class CreateView(generic.CreateView):
+    model = Article
+    template_name = 'library/create.html'
+    fields = '__all__'
+    
+class UpdateView(generic.UpdateView):
+    model = Article
+    template_name = 'library/create.html'
+    fields = '__all__'
 
+class DeleteView(generic.DeleteView):
+    model = Article
+    template_name = 'library/delete.html'
+    success_url = reverse_lazy('library:index')
 
 # Create your views here.
