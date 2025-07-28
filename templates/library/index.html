@@ -23,9 +23,9 @@
                     <td>{{ article.publicationday }}</td>
                     <td>
                         {% if article.is_on_loan %}
-                            <span style="color: red; font-weight: bold;">{{ article.get_status_display }}</span>
+                            <span class="badge bg-danger">貸出中</span>
                         {% else %}
-                            <span style="color: green; font-weight: bold;">{{ article.get_status_display }}</span>
+                            <span class="badge bg-success">在庫あり</span>
                         {% endif %}
                     </td>
                 </tr>
@@ -36,6 +36,5 @@
             {% endfor %}
         </tbody>
     </table>
-    {% comment %} <a href="{% url 'library:create' %}" class="btn btn-primary" style="display: inline-block; padding: 8px 16px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;">新規投稿</a> {% endcomment %}
 </div>
 {% endblock %}

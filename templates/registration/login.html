@@ -2,20 +2,27 @@
 {% load django_bootstrap5 %}
 
 {% block content %}
-<h1>Djangoで作るログイン機能</h1>
-{% if user.is_authenticated %}
-    <p>{{ user }} でログインしています</p>
-    <a href="{% url 'logout' %}">
-        {% bootstrap_button button_type="submit" button_class="btn-danger" content="ログアウト" size="md" %}
-    </a>
-{% else %}
-   <section>
-      <form action="{% url 'login' %}" method="post">
-        {% csrf_token %}
-        {% bootstrap_form form %}
-        <p>{% bootstrap_button button_type="submit" content="ログイン" size="md" %}</p>
-        <p><a href="{% url 'accounts:signup' %}">{% bootstrap_button button_type="submit" content="新規登録" size="md" %}</a></p>
-      </form>
-   </section>
-{% endif %}
+<div class="mt-5">
+    <h1 class="display-4 fw-bold">Djangoで作るログイン機能</h1>
+    {% if user.is_authenticated %}
+        <p>{{ user }} でログインしています</p>
+        <a href="{% url 'logout' %}">
+            {% bootstrap_button button_type="submit" button_class="btn-danger" content="ログアウト" size="md" %}
+        </a>
+    {% else %}
+       <section>
+          <form action="{% url 'login' %}" method="post">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            <div class="mb-3">
+                {% bootstrap_button button_type="submit" content="ログイン" size="md" %}
+            </div>
+          </form>
+          <div class="mb-3">
+              <p><a href="{% url 'accounts:signup' %}">{% bootstrap_button button_type="submit" content="新規登録" size="md" %}</a></p>
+
+          </div>
+       </section>
+    {% endif %}
+</div>
 {% endblock %}

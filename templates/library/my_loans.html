@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>私の借りている本</h2>
+    {% if loans %}
+        <div class="row">
+            {% for loan in loans %}
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ loan.article.title }}</h5>
+                            <p class="card-text">
+                                <strong>著者:</strong> {{ loan.article.author }}<br>
+                                <strong>貸出日:</strong> {{ loan.borrow_date }}<br>
+                                <strong>返却期限:</strong> {{ loan.due_date }}
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{% url 'library:detail' loan.article.pk %}" class="btn btn-primary btn-sm">詳細を見る</a>
+                            <form method="post" action="{% url 'library:return' loan.article.pk %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    返却する
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            <i class="fas fa-info-circle"></i>
+            現在借りている本はありません。
+        </div>
+        <a href="{% url 'library:index' %}" class="btn btn-primary">
+            本を探す
+        </a>
+    {% endif %}
+</div>
+{% endblock %}

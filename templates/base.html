@@ -21,12 +21,23 @@
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="{% url 'library:index' %}">図書一覧</a>
           </li>
+          {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'library:my_loans' %}">借りている本</a>
+          </li>
+          {% endif %}
+          {% if user.is_authenticated and user.username == 'admin' %}
           <li class="nav-item">
             <a class="nav-link" href="{% url 'library:create' %}">新規投稿</a>
           </li>
+          {% endif %}
           <li class="nav-item">
             {% if user.is_authenticated %}
-              <span class="nav-link active">{{ user }}でログイン中</span>
+              {% if user.username ==  'admin'%}
+                <span class="nav-link active">{{ user }}(管理者)でログイン中</span>
+              {% else %}
+                <span class="nav-link active">{{ user }}でログイン中</span>
+              {% endif %}
             {% endif %}
           </li>
           <li class="nav-item">
