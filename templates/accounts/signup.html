@@ -1,13 +1,32 @@
 {% extends "base.html" %}
 {% load django_bootstrap5 %}
 
+{% block title %}新規会員登録{% endblock %}
+
 {% block content %}
-<h1>Djangoで作るサインアップ機能</h1>
-<section>
-    <form method="post">
-        {% csrf_token %}
-        {% bootstrap_form form %}
-        {% bootstrap_button button_type="submit" content="サインアップ" size="md" %}
-    </form>
-</section>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="border rounded p-5 bg-light">
+                <h1 class="text-center mb-4">新規会員登録</h1>
+                <p class="text-center text-muted mb-4">図書館システムのアカウントを作成します</p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    <div class="d-grid mt-4">
+                        {% bootstrap_button button_type="submit" button_class="btn-primary btn-lg" content="アカウント作成" size="md" %}
+                    </div>
+                </form>
+                
+                <div class="text-center mt-4">
+                    <p class="mb-0">
+                        既にアカウントをお持ちの方は 
+                        <a href="{% url 'login' %}">ログイン</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

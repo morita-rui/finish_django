@@ -6,7 +6,7 @@
 <div class="mt-5">
     <h1 class="display-4 fw-bold">投稿の{{object|yesno:'編集,新規作成'}}</h1>
 
-    <form action="" method="post">
+    <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {% bootstrap_form form %}
         {% bootstrap_button button_type="submit" content=object|yesno:'更新,作成' size="md" %}

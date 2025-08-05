@@ -9,6 +9,8 @@ class Article(models.Model):
     author = models.CharField(verbose_name="著者", max_length=20)
     publicationday = models.DateField(verbose_name="出版日")
     content = models.TextField(verbose_name="内容")
+    image = models.ImageField(verbose_name="表紙画像", upload_to='article_images/', blank=True, null=True)
+
     
     def get_absolute_url(self):
         return reverse("library:detail", kwargs={"pk": self.pk})
@@ -48,4 +50,30 @@ class Loan(models.Model):
     def __str__(self):
         return f"{self.user.username} borrowed '{self.article.title}'"
 
-# Create your models here.
+class Review(models.Model):
+    RATING_CHOICES = [
+        (1, '★☆☆☆☆'),
+        (2, '★★☆☆☆'),
+        (3, '★★★☆☆'),
+        (4, '★★★★☆'),
+        (5, '★★★★★'),
+    ]
+    
+    article = models.ForeignKey(Article, verbose_name="レビュー対象の本", on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(User, verbose_name="レビュー投稿者", on_delete=models.CASCADE)
+    rating = models.IntegerField(verbose_name="評価", choices=RATING_CHOICES)
+    comment = models.TextField(verbose_name="コメント", max_length=500)
+    created_at = models.DateTimeField(verbose_name="投稿日時", auto_now_add=True)
+    updated_at = models.DateTimeField(verbose_name="更新日時", auto_now=True)
+    
+    class Meta:
+        unique_together = ('article', 'user')  
+        ordering = ['-created_at']
+    
+    def get_rating_display_stars(self):
+        """評価を星で表示"""
+        return '★' * self.rating + '☆' * (5 - self.rating)
+    
+    def __str__(self):
+        return f"{self.user.username}のレビュー: {self.article.title} ({self.rating}/5)"
+

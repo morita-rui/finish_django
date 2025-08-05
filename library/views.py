@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
-from .models import Article, Loan
+from .models import Article, Loan, Review
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin 
 from django.core.exceptions import PermissionDenied
@@ -8,6 +8,24 @@ from django import forms
 from django.contrib import messages
 from django.utils import timezone
 from datetime import timedelta
+
+class ArticleForm(forms.ModelForm):
+    class Meta:
+        model = Article
+        fields = '__all__'
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['rating', 'comment']
+        widgets = {
+            'rating': forms.Select(attrs={'class': 'form-select'}),
+            'comment': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': 'この本についての感想をお聞かせください...'
+            })
+        }
 
 class IndexView(generic.ListView):
     model = Article
@@ -25,10 +43,19 @@ class DetailView(generic.DetailView):
     model = Article
     template_name = 'library/detail.html'
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['reviews'] = self.object.reviews.all()
+        # ユーザーが既にレビューを投稿しているかチェック
+        if self.request.user.is_authenticated:
+            context['user_review'] = self.object.reviews.filter(user=self.request.user).first()
+            context['review_form'] = ReviewForm()
+        return context
+    
 class CreateView(LoginRequiredMixin, generic.edit.CreateView):
     model = Article
     template_name = 'library/create.html'
-    fields = ['title', 'isbn', 'author', 'publicationday', 'content']
+    fields = ['title', 'isbn', 'author', 'publicationday', 'content', 'image']
     
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -50,13 +77,20 @@ class CreateView(LoginRequiredMixin, generic.edit.CreateView):
         return super(CreateView, self).dispatch(request, *args, **kwargs)
     
     def form_valid(self, form):
-        # form.instance.author = self.request.user
         return super(CreateView, self).form_valid(form)
     
 class UpdateView(LoginRequiredMixin, generic.edit.UpdateView):
     model = Article
     template_name = 'library/create.html'
-    fields = ['content']
+    fields = ['title', 'isbn', 'author', 'publicationday', 'content', 'image']
+    
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['publicationday'].widget = forms.DateInput(attrs={
+            'type': 'date',
+            'class': 'form-control'
+        })
+        return form
     
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -125,4 +159,46 @@ class MyLoansView(LoginRequiredMixin, generic.ListView):
             return_date__isnull=True
         ).select_related('article').order_by('due_date')
 
+class ReviewView(LoginRequiredMixin, generic.View):
+    def post(self, request, pk):
+        article = get_object_or_404(Article, pk=pk)
+        
+        existing_review = Review.objects.filter(article=article, user=request.user).first()
+        
+        if existing_review:
+            return redirect('library:detail', pk=pk)
+        
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.article = article
+            review.user = request.user
+            review.save()
+        
+        return redirect('library:detail', pk=pk)
 
+class CreateReviewView(LoginRequiredMixin, generic.CreateView):
+    model = Review
+    form_class = ReviewForm
+    template_name = 'library/create_review.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        self.article = get_object_or_404(Article, pk=self.kwargs['pk'])
+        context['article'] = self.article
+        return context
+    
+    def form_valid(self, form):
+        self.article = get_object_or_404(Article, pk=self.kwargs['pk'])
+        
+        existing_review = Review.objects.filter(article=self.article, user=self.request.user).first()
+        
+        if existing_review:
+            return redirect('library:detail', pk=self.article.pk)
+        
+        form.instance.article = self.article
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        return reverse_lazy('library:detail', kwargs={'pk': self.kwargs['pk']})

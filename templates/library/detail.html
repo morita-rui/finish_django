@@ -18,39 +18,48 @@
     
     <div class="card bg-light shadow-sm mt-3">
         <div class="card-body">
-            <p><strong>著者:</strong> {{ object.author }}</p>
-            <p><strong>出版日:</strong> {{ object.publicationday }}</p>
-            <p><strong>ISBN:</strong> {{ object.isbn }}</p>
-            <p><strong>内容:</strong> {{ object.content }}</p>
-            <p><strong>状況:</strong> 
-                {% if object.is_on_loan %}
-                    <span class="badge bg-danger">貸出中</span>
-                    {% with current_loan=object.get_current_loan %}
-                        <br><small> 返却期限: {{ current_loan.due_date }}</small>
-                    {% endwith %}
-                {% else %}
-                    <span class="badge bg-success">在庫あり</span>
-                {% endif %}
-            </p>
-            
-            <div class="mt-3">
-                {% if user.is_authenticated %}
-                    {% if object.is_on_loan %}
-                        {% with current_loan=object.get_current_loan %}
-                            {% if current_loan.user == user or user.username == 'admin' %}
-                                <form method="post" action="{% url 'library:return' object.pk %}" style="display: inline;">
+            <div class="row">
+                <div class="col-md-8">
+                    <p><strong>著者:</strong> {{ object.author }}</p>
+                    <p><strong>出版日:</strong> {{ object.publicationday }}</p>
+                    <p><strong>ISBN:</strong> {{ object.isbn }}</p>
+                    <p><strong>内容:</strong> {{ object.content }}</p>
+                    <p><strong>状況:</strong> 
+                        {% if object.is_on_loan %}
+                            <span class="badge bg-danger">貸出中</span>
+                            {% with current_loan=object.get_current_loan %}
+                                <br><small> 返却期限: {{ current_loan.due_date }}</small>
+                            {% endwith %}
+                        {% else %}
+                            <span class="badge bg-success">在庫あり</span>
+                        {% endif %}
+                    </p>
+                    
+                    <div class="mt-3">
+                        {% if user.is_authenticated %}
+                            {% if object.is_on_loan %}
+                                {% with current_loan=object.get_current_loan %}
+                                    {% if current_loan.user == user or user.username == 'admin' %}
+                                        <form method="post" action="{% url 'library:return' object.pk %}" style="display: inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-warning">返却する</button>
+                                        </form>
+                                    {% endif %}
+                                {% endwith %}
+                            {% else %}
+                                <form method="post" action="{% url 'library:borrow' object.pk %}" style="display: inline;">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-warning">返却する</button>
+                                    <button type="submit" class="btn btn-primary">借りる</button>
                                 </form>
                             {% endif %}
-                        {% endwith %}
-                    {% else %}
-                        <form method="post" action="{% url 'library:borrow' object.pk %}" style="display: inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-primary">借りる</button>
-                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4 text-center">
+                    {% if article.image %}
+                      <img src="{{ article.image.url }}" alt="{{ article.title }}の表紙" class="img-fluid" style="max-width: 170px; max-height: 270px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
                     {% endif %}
-                {% endif %}
+                </div>
             </div>
         </div>
     </div>
@@ -60,6 +69,40 @@
             <a href="{% url "library:delete" object.pk %}">{% bootstrap_button button_type="submit" button_class="btn-danger" content="削除" size="md" %}</a>
         </div>
     {% endif %}
+    <br>
+    {% if user.is_authenticated %}
+            {% if not user_review %}
+                <div class="mb-4">
+                    <a href="{% url 'library:review_create' object.pk %}" class="btn btn-primary">
+                        <i class="fas fa-star"></i> レビューを投稿する
+                    </a>
+                </div>
+        {% endif %}
+    {% endif %}
+    
+    <div class="mt-5">
+        <h3 class="mb-4">レビュー</h3>
+        {% if reviews %}
+            <h5>ユーザーレビュー</h5>
+            {% for review in reviews %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="card-title">{{ review.user.username }}</h6>
+                                <p class="mb-1"><strong>評価:</strong> {{ review.get_rating_display_stars }}</p>
+                                <p class="card-text">{{ review.comment }}</p>
+                            </div>
+                            <small class="text-muted">{{ review.created_at|date:"Y/m/d" }}</small>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-muted">まだレビューはありません。</p>
+        {% endif %}
+    </div>
+    
     <div class="mt-3">
         <a href="{% url 'library:index' %}">{% bootstrap_button button_type="submit" button_class="btn-secondary" content="一覧ページへ戻る" size="md" %}</a>
     </div>

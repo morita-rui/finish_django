@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}レビュー投稿{% endblock %}
+
+{% block content %}
+<div class="mt-5">
+    <h1 class="display-4 fw-bold">レビューの投稿</h1>
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">「{{ article.title }}」のレビューを投稿</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <div class="d-flex gap-2 mt-3">
+                    <button type="submit" class="btn btn-primary">レビューを投稿</button>
+                    <a href="{% url 'library:detail' article.pk %}" class="btn btn-secondary">キャンセル</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

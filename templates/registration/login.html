@@ -2,27 +2,60 @@
 {% load django_bootstrap5 %}
 
 {% block content %}
-<div class="mt-5">
-    <h1 class="display-4 fw-bold">Djangoで作るログイン機能</h1>
-    {% if user.is_authenticated %}
-        <p>{{ user }} でログインしています</p>
-        <a href="{% url 'logout' %}">
-            {% bootstrap_button button_type="submit" button_class="btn-danger" content="ログアウト" size="md" %}
-        </a>
-    {% else %}
-       <section>
-          <form action="{% url 'login' %}" method="post">
-            {% csrf_token %}
-            {% bootstrap_form form %}
-            <div class="mb-3">
-                {% bootstrap_button button_type="submit" content="ログイン" size="md" %}
-            </div>
-          </form>
-          <div class="mb-3">
-              <p><a href="{% url 'accounts:signup' %}">{% bootstrap_button button_type="submit" content="新規登録" size="md" %}</a></p>
-
-          </div>
-       </section>
-    {% endif %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            {% if user.is_authenticated %}
+                <div class="border rounded p-5 bg-light">
+                    <div class="text-center">
+                        <h3 class="mb-4">ログイン済み</h3>
+                        <p class="mb-3 fs-5">{{ user }} でログインしています</p>
+                        <a href="{% url 'logout' %}" class="btn btn-danger btn-lg">
+                            ログアウト
+                        </a>
+                    </div>
+                </div>
+            {% else %}
+                    <div>
+                        <h2 class="text-center mb-3">ログイン</h2>
+                        <p class="text-center text-muted mb-1 fs-5">アカウントでログインしてください</p>
+                        
+                        <form action="{% url 'login' %}" method="post">
+                            {% csrf_token %}
+                            
+                            <div class="mb-4">
+                                <label for="{{ form.username.id_for_label }}" class="form-label fs-5">ユーザー名</label>
+                                <input type="text" 
+                                       class="form-control form-control-lg" 
+                                       id="{{ form.username.id_for_label }}" 
+                                       name="{{ form.username.name }}" 
+                                       placeholder="ユーザー名を入力"
+                                       required>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="{{ form.password.id_for_label }}" class="form-label fs-5">パスワード</label>
+                                <input type="password" 
+                                       class="form-control form-control-lg" 
+                                       id="{{ form.password.id_for_label }}" 
+                                       name="{{ form.password.name }}" 
+                                       placeholder="パスワードを入力"
+                                       required>
+                            </div>
+                            
+                            <div class="d-grid mb-4">
+                                <button type="submit" class="btn btn-primary btn-lg">ログイン</button>
+                            </div>
+                        </form>
+                        
+                        <div class="text-center">
+                            <p class="mb-0 fs-5">
+                                <a href="{% url 'accounts:signup' %}">新規登録</a>
+                            </p>
+                        </div>
+                    </div>
+            {% endif %}
+        </div>
+    </div>
 </div>
 {% endblock %}
