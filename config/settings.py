@@ -10,8 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-import os
 from pathlib import Path
+import os
+import environ
+from decouple import config
+from dj_database_url import parse as dburl
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -47,12 +50,24 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# 環境変数にDATABASE_URLが設定されていない場合は、db.sqlite3 データベースを使用
+default_dburl = "sqlite:///" + str(BASE_DIR / "db.sqlite3")
+# Postsql使用のためDATABASE_URLを指定。
+DATABASES = {
+    "default": config("DATABASE_URL", default=default_dburl, cast=dburl),
+}
+
+#  # whitenoiseを使用する為、追加
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 
 ROOT_URLCONF = 'config.urls'
 
@@ -111,6 +126,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
+
+ALLOWED_HOSTS = ['*']
 
 LANGUAGE_CODE = 'ja'
 
